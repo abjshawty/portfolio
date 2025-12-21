@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+import { CommandPalette } from "@/components/command-palette";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,6 +23,7 @@ import { site } from "@/lib/mock-data";
 import {
     GithubLogoIcon,
     ListIcon,
+    MagnifyingGlassIcon,
     MonitorIcon,
     MoonIcon,
     SoundcloudLogoIcon,
@@ -78,6 +80,31 @@ export function SiteHeader () {
                 </nav>
 
                 <div className="ml-auto flex items-center gap-2">
+                    <div className="hidden md:block">
+                        <CommandPalette
+                            trigger={({ onClick }) => (
+                                <Button
+                                    type="button"
+                                    onClick={onClick}
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-border/60 bg-background/40"
+                                >
+                                    <MagnifyingGlassIcon data-icon="inline-start" />
+                                    Search
+                                    <span className="text-muted-foreground ml-2 hidden items-center gap-1 lg:inline-flex">
+                                        <kbd className="border-border/60 bg-muted/20 rounded-md border px-1.5 py-0.5 text-[10px]">
+                                            Ctrl
+                                        </kbd>
+                                        <kbd className="border-border/60 bg-muted/20 rounded-md border px-1.5 py-0.5 text-[10px]">
+                                            K
+                                        </kbd>
+                                    </span>
+                                </Button>
+                            )}
+                        />
+                    </div>
+
                     <div className="hidden items-center gap-2 sm:flex">
                         <Button
                             asChild
@@ -148,6 +175,22 @@ export function SiteHeader () {
                                     </DropdownMenuItem>
                                 ))}
                             </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => { }}>
+                                <CommandPalette
+                                    trigger={({ onClick }) => (
+                                        <button
+                                            type="button"
+                                            onClick={onClick}
+                                            className="flex w-full items-center gap-2"
+                                        >
+                                            <MagnifyingGlassIcon />
+                                            Search
+                                            <span className="ml-auto text-xs text-muted-foreground">Ctrl K</span>
+                                        </button>
+                                    )}
+                                />
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuLabel>Elsewhere</DropdownMenuLabel>
                             <DropdownMenuSeparator />
