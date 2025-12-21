@@ -1,6 +1,8 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +11,8 @@ import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -18,7 +22,10 @@ import { site } from "@/lib/mock-data";
 import {
     GithubLogoIcon,
     ListIcon,
+    MonitorIcon,
+    MoonIcon,
     SoundcloudLogoIcon,
+    SunIcon,
     YoutubeLogoIcon,
 } from "@phosphor-icons/react";
 
@@ -31,6 +38,13 @@ const nav = [
 ] as const;
 
 export function SiteHeader () {
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
     return (
         <header className="supports-[backdrop-filter]:bg-background/60 border-border/60 sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
             <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-3 px-4 sm:px-6">
@@ -85,6 +99,38 @@ export function SiteHeader () {
                     </div>
 
                     <Separator orientation="vertical" className="hidden h-8 md:block" />
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="icon" className="border-border/60 bg-background/40" aria-label="Theme">
+                                {mounted && theme === "light" ? (
+                                    <SunIcon />
+                                ) : mounted && theme === "dark" ? (
+                                    <MoonIcon />
+                                ) : (
+                                    <MonitorIcon />
+                                )}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuLabel>Theme</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuRadioGroup value={mounted ? theme : "system"} onValueChange={setTheme}>
+                                <DropdownMenuRadioItem value="light">
+                                    <SunIcon data-icon="inline-start" />
+                                    Light
+                                </DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value="dark">
+                                    <MoonIcon data-icon="inline-start" />
+                                    Dark
+                                </DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value="system">
+                                    <MonitorIcon data-icon="inline-start" />
+                                    System
+                                </DropdownMenuRadioItem>
+                            </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

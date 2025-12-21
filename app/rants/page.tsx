@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -86,9 +88,11 @@ export default function RantsPage () {
                             ) : null}
                         </CardContent>
                         <CardFooter className="bg-muted/20 border-border/60">
-                            <Button variant="ghost" className="ml-auto">
-                                Open
-                                <ArrowRightIcon data-icon="inline-end" />
+                            <Button asChild variant="ghost" className="ml-auto">
+                                <Link href={`/rants/${r.slug}`}>
+                                    Open
+                                    <ArrowRightIcon data-icon="inline-end" />
+                                </Link>
                             </Button>
                         </CardFooter>
                     </Card>

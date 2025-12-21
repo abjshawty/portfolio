@@ -113,7 +113,7 @@ export default function Page () {
                             </CardContent>
                             <CardFooter className="bg-muted/20 border-border/60">
                                 <Button asChild variant="ghost" className="ml-auto">
-                                    <Link href="/projects">
+                                    <Link href={`/projects/${p.slug}`}>
                                         {p.linkLabel}
                                         <ArrowRightIcon data-icon="inline-end" />
                                     </Link>
@@ -251,7 +251,7 @@ export default function Page () {
                             </CardContent>
                             <CardFooter className="bg-muted/20 border-border/60">
                                 <Button asChild variant="ghost" className="ml-auto">
-                                    <Link href="/rants">
+                                    <Link href={`/rants/${r.slug}`}>
                                         Open
                                         <ArrowRightIcon data-icon="inline-end" />
                                     </Link>

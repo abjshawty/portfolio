@@ -96,7 +96,7 @@ export default function ProjectsPage () {
                             </CardContent>
                             <CardFooter className="bg-muted/20 border-border/60">
                                 <Button asChild variant="ghost" className="ml-auto">
-                                    <Link href="/">
+                                    <Link href={`/projects/${p.slug}`}>
                                         {p.linkLabel}
                                         <ArrowRightIcon data-icon="inline-end" />
                                     </Link>

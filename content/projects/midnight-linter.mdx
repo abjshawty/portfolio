@@ -1,0 +1,31 @@
+---
+title: "Midnight Linter"
+summary: "A code-quality assistant that prioritizes vibes: fast feedback, quiet UX, zero shame."
+year: "2024"
+tags:
+  - TypeScript
+  - DX
+  - Tooling
+---
+
+## What it is
+
+Midnight Linter is the antidote to loud tooling.
+
+- Small, readable diffs
+- Friendly, compact UI
+- A focus on flow instead of punishment
+
+## Audio note (why it exists)
+
+<Audio title="Voice note: why quiet UX matters" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
+
+## Implementation sketch
+
+```ts
+type Finding = {
+  rule: string
+  message: string
+  severity: "info" | "warn" | "error"
+}
+```

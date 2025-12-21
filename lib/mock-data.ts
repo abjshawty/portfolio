@@ -27,6 +27,7 @@ export type RantKind = "text" | "audio" | "video";
 
 export type Rant = {
     id: string;
+    slug: string;
     kind: RantKind;
     title: string;
     date: string;
@@ -117,6 +118,7 @@ export const paintings: Painting[] = [
 export const rants: Rant[] = [
     {
         id: "r1",
+        slug: "on-shipping-the-art-of-stopping",
         kind: "text",
         title: "On shipping: the art of stopping",
         date: "2025-11-18",
@@ -125,6 +127,7 @@ export const rants: Rant[] = [
     },
     {
         id: "r2",
+        slug: "why-i-record-voice-notes-instead-of-tweets",
         kind: "audio",
         title: "Why I record voice notes instead of tweets",
         date: "2025-10-02",
@@ -135,6 +138,7 @@ export const rants: Rant[] = [
     },
     {
         id: "r3",
+        slug: "a-furious-walk-through-my-folder-structure",
         kind: "video",
         title: "A furious walk through my folder structure",
         date: "2025-08-20",
