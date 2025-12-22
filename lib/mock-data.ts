@@ -37,11 +37,11 @@ export type Rant = {
 };
 
 export const site = {
-    name: "Center View",
+    name: "Timmy's Devlog",
     tagline: "Projects, music, paintings, and unapologetically long rants.",
     location: "Somewhere between a terminal and a canvas",
     links: {
-        github: "https://github.com/",
+        github: "https://github.com/abjshawty",
         youtube: "https://www.youtube.com/",
         soundcloud: "https://soundcloud.com/",
     },

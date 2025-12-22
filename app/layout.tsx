@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Center View",
+  title: "Timmy's Devlog",
   description:
     "A dark-mode portfolio and blog for programming projects, music, paintings, and rants.",
 };
