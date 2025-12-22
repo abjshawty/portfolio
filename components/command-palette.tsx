@@ -18,7 +18,30 @@ import {
     CommandShortcut,
 } from "@/components/ui/command";
 
-import { ArrowRightIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
+import {
+    ArrowRightIcon,
+    ChatCircleTextIcon,
+    CompassIcon,
+    CodeIcon,
+    MagnifyingGlassIcon,
+} from "@phosphor-icons/react";
+
+let cachedIndex: SearchIndex | null = null;
+let cachedIndexPromise: Promise<SearchIndex> | null = null;
+
+async function fetchSearchIndex () {
+    if (cachedIndex) return cachedIndex;
+    if (!cachedIndexPromise) {
+        cachedIndexPromise = fetch("/api/search-index")
+            .then((res) => res.json() as Promise<SearchIndex>)
+            .then((json) => {
+                cachedIndex = json;
+                return json;
+            });
+    }
+
+    return cachedIndexPromise;
+}
 
 type SearchItem = {
     title: string;
@@ -50,29 +73,51 @@ function useHotkeys (onToggle: () => void) {
 
 export function CommandPalette ({
     trigger,
+    open: openProp,
+    onOpenChange,
 }: {
-    trigger?: (props: { onClick: () => void; }) => React.ReactNode;
+    trigger?: (props: { onClick: () => void; onPreload: () => void; }) => React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }) {
     const router = useRouter();
-    const [open, setOpen] = React.useState(false);
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
+    const open = openProp ?? uncontrolledOpen;
+    const setOpen = React.useCallback(
+        (next: boolean | ((prev: boolean) => boolean)) => {
+            const value = typeof next === "function" ? next(open) : next;
+            onOpenChange?.(value);
+            if (openProp === undefined) setUncontrolledOpen(value);
+        },
+        [onOpenChange, open, openProp]
+    );
     const [index, setIndex] = React.useState<SearchIndex | null>(null);
 
     useHotkeys(() => setOpen((v) => !v));
 
+    const preload = React.useCallback(() => {
+        if (index) return;
+        void fetchSearchIndex().then((json) => {
+            setIndex((prev) => prev ?? json);
+        });
+    }, [index]);
+
     React.useEffect(() => {
         if (!open || index) return;
 
-        let cancelled = false
-            ; (async () => {
-                const res = await fetch("/api/search-index");
-                const json = (await res.json()) as SearchIndex;
-                if (!cancelled) setIndex(json);
-            })();
+        let cancelled = false;
+        void fetchSearchIndex().then((json) => {
+            if (!cancelled) setIndex(json);
+        });
 
         return () => {
             cancelled = true;
         };
     }, [open, index]);
+
+    React.useEffect(() => {
+        if (!index && cachedIndex) setIndex(cachedIndex);
+    }, [index]);
 
     const allItems = React.useMemo(() => {
         if (!index) return [] as SearchItem[];
@@ -97,14 +142,23 @@ export function CommandPalette ({
         [router]
     );
 
+    const getGroupIcon = React.useCallback((group: string) => {
+        if (group.toLowerCase() === "pages") return CompassIcon;
+        if (group.toLowerCase() === "projects") return CodeIcon;
+        if (group.toLowerCase() === "rants") return ChatCircleTextIcon;
+        return ArrowRightIcon;
+    }, []);
+
     return (
         <>
             {trigger ? (
-                trigger({ onClick: () => setOpen(true) })
+                trigger({ onClick: () => setOpen(true), onPreload: preload })
             ) : (
                 <button
                     type="button"
                     onClick={() => setOpen(true)}
+                    onMouseEnter={preload}
+                    onFocus={preload}
                     className="border-border/60 bg-background/40 text-muted-foreground hover:text-foreground inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors"
                 >
                     <MagnifyingGlassIcon />
@@ -139,6 +193,14 @@ export function CommandPalette ({
                                                     value={`${item.title} ${item.subtitle ?? ""}`}
                                                     onSelect={() => onSelect(item.href)}
                                                 >
+                                                    {(() => {
+                                                        const Icon = getGroupIcon(item.group);
+                                                        return (
+                                                            <span className="text-muted-foreground shrink-0">
+                                                                <Icon />
+                                                            </span>
+                                                        );
+                                                    })()}
                                                     <div className="min-w-0 flex-1">
                                                         <div className="truncate font-medium">{item.title}</div>
                                                         {item.subtitle ? (

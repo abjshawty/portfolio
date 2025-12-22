@@ -15,6 +15,7 @@ export type RantFrontmatter = {
     date: string;
     kind: "text" | "audio" | "video";
     duration?: string;
+    tags?: string[];
 };
 
 export type ContentEntry<TFrontmatter> = {
@@ -22,6 +23,51 @@ export type ContentEntry<TFrontmatter> = {
     frontmatter: TFrontmatter;
     content: string;
 };
+
+function assertString (value: unknown, field: string, filePath: string): asserts value is string {
+    if (typeof value !== "string" || value.trim().length === 0) {
+        throw new Error(`[content] Invalid or missing '${field}' in ${filePath}`);
+    }
+}
+
+function assertOptionalString (value: unknown, field: string, filePath: string) {
+    if (value === undefined) return;
+    if (typeof value !== "string") {
+        throw new Error(`[content] Invalid '${field}' (expected string) in ${filePath}`);
+    }
+}
+
+function assertOptionalStringArray (value: unknown, field: string, filePath: string) {
+    if (value === undefined) return;
+    if (!Array.isArray(value) || value.some((v) => typeof v !== "string")) {
+        throw new Error(`[content] Invalid '${field}' (expected string[]) in ${filePath}`);
+    }
+}
+
+function validateProjectFrontmatter (data: Record<string, unknown>, filePath: string): ProjectFrontmatter {
+    assertString(data.title, "title", filePath);
+    assertString(data.summary, "summary", filePath);
+    assertOptionalString(data.year, "year", filePath);
+    assertOptionalStringArray(data.tags, "tags", filePath);
+
+    return data as unknown as ProjectFrontmatter;
+}
+
+function validateRantFrontmatter (data: Record<string, unknown>, filePath: string): RantFrontmatter {
+    assertString(data.title, "title", filePath);
+    assertString(data.excerpt, "excerpt", filePath);
+    assertString(data.date, "date", filePath);
+
+    const kind = data.kind;
+    if (kind !== "text" && kind !== "audio" && kind !== "video") {
+        throw new Error(`[content] Invalid or missing 'kind' in ${filePath}`);
+    }
+
+    assertOptionalString(data.duration, "duration", filePath);
+    assertOptionalStringArray(data.tags, "tags", filePath);
+
+    return data as unknown as RantFrontmatter;
+}
 
 function contentDir (...parts: string[]) {
     return path.join(process.cwd(), "content", ...parts);
@@ -35,9 +81,15 @@ async function readEntry<TFrontmatter> (
     const raw = await fs.readFile(filePath, "utf8");
     const parsed = matter(raw);
 
+    const data = parsed.data as Record<string, unknown>;
+    const frontmatter =
+        folder === "projects"
+            ? validateProjectFrontmatter(data, filePath)
+            : validateRantFrontmatter(data, filePath);
+
     return {
         slug,
-        frontmatter: parsed.data as TFrontmatter,
+        frontmatter: frontmatter as TFrontmatter,
         content: parsed.content,
     };
 }

@@ -42,6 +42,8 @@ const nav = [
 export function SiteHeader () {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = React.useState(false);
+    const [paletteOpen, setPaletteOpen] = React.useState(false);
+    const [menuOpen, setMenuOpen] = React.useState(false);
 
     React.useEffect(() => {
         setMounted(true);
@@ -80,12 +82,16 @@ export function SiteHeader () {
                 </nav>
 
                 <div className="ml-auto flex items-center gap-2">
-                    <div className="hidden md:block">
-                        <CommandPalette
-                            trigger={({ onClick }) => (
+                    <CommandPalette
+                        open={paletteOpen}
+                        onOpenChange={setPaletteOpen}
+                        trigger={({ onClick, onPreload }) => (
+                            <div className="hidden md:block">
                                 <Button
                                     type="button"
                                     onClick={onClick}
+                                    onMouseEnter={onPreload}
+                                    onFocus={onPreload}
                                     variant="outline"
                                     size="sm"
                                     className="border-border/60 bg-background/40"
@@ -101,9 +107,9 @@ export function SiteHeader () {
                                         </kbd>
                                     </span>
                                 </Button>
-                            )}
-                        />
-                    </div>
+                            </div>
+                        )}
+                    />
 
                     <div className="hidden items-center gap-2 sm:flex">
                         <Button
@@ -159,7 +165,7 @@ export function SiteHeader () {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <DropdownMenu>
+                    <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" aria-label="Open menu">
                                 <ListIcon />
@@ -176,20 +182,21 @@ export function SiteHeader () {
                                 ))}
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => { }}>
-                                <CommandPalette
-                                    trigger={({ onClick }) => (
-                                        <button
-                                            type="button"
-                                            onClick={onClick}
-                                            className="flex w-full items-center gap-2"
-                                        >
-                                            <MagnifyingGlassIcon />
-                                            Search
-                                            <span className="ml-auto text-xs text-muted-foreground">Ctrl K</span>
-                                        </button>
-                                    )}
-                                />
+                            <DropdownMenuItem
+                                onSelect={(e) => {
+                                    e.preventDefault();
+                                    setMenuOpen(false);
+                                    setPaletteOpen(true);
+                                }}
+                            >
+                                <button
+                                    type="button"
+                                    className="flex w-full items-center gap-2"
+                                >
+                                    <MagnifyingGlassIcon />
+                                    Search
+                                    <span className="ml-auto text-xs text-muted-foreground">Ctrl K</span>
+                                </button>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuLabel>Elsewhere</DropdownMenuLabel>
