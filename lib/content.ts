@@ -24,6 +24,15 @@ export type ContentEntry<TFrontmatter> = {
     content: string;
 };
 
+function coerceString (value: unknown, field: string, filePath: string) {
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+        return value.toISOString().slice(0, 10);
+    }
+    if (typeof value === "string") return value;
+
+    throw new Error(`[content] Invalid or missing '${field}' in ${filePath}`);
+}
+
 function assertString (value: unknown, field: string, filePath: string): asserts value is string {
     if (typeof value !== "string" || value.trim().length === 0) {
         throw new Error(`[content] Invalid or missing '${field}' in ${filePath}`);
@@ -56,6 +65,7 @@ function validateProjectFrontmatter (data: Record<string, unknown>, filePath: st
 function validateRantFrontmatter (data: Record<string, unknown>, filePath: string): RantFrontmatter {
     assertString(data.title, "title", filePath);
     assertString(data.excerpt, "excerpt", filePath);
+    data.date = coerceString(data.date, "date", filePath);
     assertString(data.date, "date", filePath);
 
     const kind = data.kind;
